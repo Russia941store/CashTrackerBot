@@ -121,7 +121,11 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"*💰 Сумма:* {data['sum']} ₽"
     )
     await context.bot.send_photo(chat_id=CHANNEL_ID, photo=photo, caption=caption, parse_mode="Markdown")
-    await update.message.reply_text("✅ Чек отправлен.", reply_markup=main_menu_keyboard())
+    await update.message.chat.send_photo(
+        photo="https://i.imgur.com/0bnQ1og.jpeg",
+        caption="✅ Чек успешно отправлен!\n\n💬 Выберите следующий способ оплаты:"
+    reply_markup=main_menu_keyboard()
+)
     return CHOOSE_TYPE
 
 async def handle_summary(update: Update, context: ContextTypes.DEFAULT_TYPE):
