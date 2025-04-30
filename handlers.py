@@ -92,7 +92,7 @@ async def back_to_sum(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=back_to_main_keyboard(),
         parse_mode="Markdown"
     )
-    return SELECT_SUM
+    return SELECT_SUM # комм
 
 async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
