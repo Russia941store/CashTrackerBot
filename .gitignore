@@ -1,7 +1,2 @@
-# .gitignore
-__pycache__/
-*.pyc
-.env
-.DS_Store
-venv/
 config.py
+__pycache__/

@@ -1,51 +1,65 @@
 # main.py
 import logging
-from telegram import Update
 from telegram.ext import (
-    ApplicationBuilder, CommandHandler,
-    MessageHandler, CallbackQueryHandler,
-    ConversationHandler, filters, ContextTypes
+    ApplicationBuilder,
+    CommandHandler,
+    MessageHandler,
+    CallbackQueryHandler,
+    ConversationHandler,
+    ContextTypes,
+    filters,
 )
 from config import BOT_TOKEN
 from handlers import (
-    start, choose_manager, choose_delivery,
-    write_comment, back_to_delivery,
-    CHOOSE_MANAGER, CHOOSE_DELIVERY, WRITE_COMMENT
+    start,
+    handle_payment_type,
+    handle_sum,
+    handle_photo,
+    handle_summary,
+    back_to_sum
 )
 
-logging.basicConfig(level=logging.INFO)
+CHOOSE_TYPE, SELECT_SUM, UPLOAD_PHOTO = range(3)
 
-async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    print("📨 Получено сообщение!")
-    await update.message.reply_text("Я получил: " + update.message.text)
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.INFO
+)
+
+async def notify_channel_startup(app):
+    from config import CHANNEL_ID
+    try:
+        await app.bot.send_message(chat_id=CHANNEL_ID, text="✅ Бот успешно запущен и подключен к каналу.")
+    except Exception as e:
+        print(f"❌ Ошибка при отправке в канал: {e}")
 
 def main():
     app = ApplicationBuilder().token(BOT_TOKEN).build()
+    app.post_init = notify_channel_startup
 
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler("start", start)],
         states={
-            CHOOSE_MANAGER: [
-                CallbackQueryHandler(choose_manager, pattern="^manager_")
+            CHOOSE_TYPE: [
+                CallbackQueryHandler(handle_payment_type, pattern="^(payment_QR|payment_Terminal|back_main)$")
             ],
-            CHOOSE_DELIVERY: [
-                CallbackQueryHandler(choose_delivery, pattern="^delivery_"),
-                CallbackQueryHandler(choose_delivery, pattern="^back_to_manager$"),
-                CallbackQueryHandler(back_to_delivery, pattern="^back_to_delivery$")
+            SELECT_SUM: [
+                MessageHandler(filters.TEXT & ~filters.COMMAND, handle_sum),
+                CallbackQueryHandler(handle_payment_type, pattern="^back_main$")
             ],
-            WRITE_COMMENT: [
-                MessageHandler(filters.TEXT & ~filters.COMMAND, write_comment),
-                CallbackQueryHandler(back_to_delivery, pattern="^back_to_delivery$")
+            UPLOAD_PHOTO: [
+                MessageHandler(filters.PHOTO, handle_photo),
+                CallbackQueryHandler(back_to_sum, pattern="^back_amount$"),
+                CallbackQueryHandler(handle_payment_type, pattern="^back_main$")
             ],
         },
-        fallbacks=[],
-        allow_reentry=True
+        fallbacks=[CommandHandler("start", start)],
     )
 
     app.add_handler(conv_handler)
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))  # 👈 На случай простых текстов
+    app.add_handler(CallbackQueryHandler(handle_summary, pattern="^summary$"))
 
-    print("✅ Бот запущен. Ожидаем команды /start...")
+    print("✅ Бот запущен. Ожидаем команду /start")
     app.run_polling()
 
 if __name__ == "__main__":

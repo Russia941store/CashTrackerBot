@@ -1,22 +1,20 @@
-#keyboard.py
+# keyboard.py
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from config import MANAGERS, DELIVERY_TYPES
 
-def manager_keyboard():
+def main_menu_keyboard():
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton(manager, callback_data=f"manager_{manager}")]
-        for manager in MANAGERS
+        [InlineKeyboardButton("🧾 QR", callback_data="payment_QR")],
+        [InlineKeyboardButton("💳 Терминал", callback_data="payment_Terminal")],
+        [InlineKeyboardButton("📊 Общий итог за день", callback_data="summary")]
     ])
 
-def delivery_keyboard():
-    buttons = [
-        [InlineKeyboardButton(delivery, callback_data=f"delivery_{delivery}")]
-        for delivery in DELIVERY_TYPES
-    ]
-    buttons.append([InlineKeyboardButton("♻️ Сменить менеджера", callback_data="back_to_manager")])
-    return InlineKeyboardMarkup(buttons)
-
-def comment_keyboard():
+def back_to_main_keyboard():
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton("⬅ Назад", callback_data="back_to_delivery")]
+        [InlineKeyboardButton("🔄 Изменить способ оплаты", callback_data="back_main")]
+    ])
+
+def back_to_amount_keyboard():
+    return InlineKeyboardMarkup([
+        [InlineKeyboardButton("🔢 Изменить сумму оплаты", callback_data="back_amount")],
+        [InlineKeyboardButton("⬅️ Главное меню", callback_data="back_main")]
     ])
