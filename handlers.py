@@ -144,5 +144,9 @@ async def handle_summary(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
     await query.answer()
-    await context.bot.send_message(chat_id=CHANNEL_ID, text=text, parse_mode="Markdown")
-    return ConversationHandler.END
+    await context.bot.send_photo(
+        chat_id=CHANNEL_ID,
+        photo="https://i.imgur.com/D8YKlfV.jpeg",
+        caption=text,
+        parse_mode="Markdown"
+    )
