@@ -64,6 +64,17 @@ async def handle_payment_type(update: Update, context: ContextTypes.DEFAULT_TYPE
         )
         return SELECT_POINT
 
+    if query.data == "back_main":
+        point = user_data[user_id].get("point", "❓")
+        await query.message.delete()
+        await query.message.chat.send_photo(
+            photo="https://i.imgur.com/0bnQ1og.jpeg",
+            caption=f"🏬 *Точка продаж:* {escape_markdown(point)}\n\n💬 Выберите способ оплаты:",
+            reply_markup=payment_options_keyboard(point),
+            parse_mode="Markdown"
+        )
+        return CHOOSE_TYPE
+
     payment_type = query.data.replace("payment_", "")
     user_data[user_id]["type"] = payment_type
     point = user_data[user_id].get("point", "❓")
