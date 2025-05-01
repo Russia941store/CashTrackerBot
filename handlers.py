@@ -1,5 +1,6 @@
 from telegram import Update
 from telegram.ext import ContextTypes, ConversationHandler
+from telegram.helpers import escape_markdown
 from datetime import datetime, timedelta
 from config import CHANNEL_ID, MINION_CHANNEL_ID
 from keyboard import (
@@ -42,7 +43,7 @@ async def handle_point_choice(update: Update, context: ContextTypes.DEFAULT_TYPE
     await query.message.delete()
     await query.message.chat.send_photo(
         photo="https://i.imgur.com/0bnQ1og.jpeg",
-        caption=f"🏬 *Точка продаж:* {point}\n\n💬 Выберите способ оплаты:",
+        caption=f"🏬 *Точка продаж:* {escape_markdown(point)}\n\n💬 Выберите способ оплаты:",
         reply_markup=payment_options_keyboard(point),
         parse_mode="Markdown"
     )
@@ -71,8 +72,8 @@ async def handle_payment_type(update: Update, context: ContextTypes.DEFAULT_TYPE
     await query.message.chat.send_photo(
         photo="https://i.imgur.com/Wo5q3QU.jpeg",
         caption=(
-            f"*🏬 Точка продаж:* {point}\n"
-            f"*💳 Тип оплаты:* {payment_type}\n\n"
+            f"*🏬 Точка продаж:* {escape_markdown(point)}\n"
+            f"*💳 Тип оплаты:* {escape_markdown(payment_type)}\n\n"
             f"💬 Введите сумму в чат или измените способ оплаты"
         ),
         reply_markup=back_to_main_keyboard(),
@@ -98,8 +99,8 @@ async def handle_sum(update: Update, context: ContextTypes.DEFAULT_TYPE):
         photo="https://i.imgur.com/tIYn2ye.jpeg",
         caption=(
             f"*🗓 {now}*\n\n"
-            f"*🏬 Точка продаж:* {point}\n"
-            f"*💳 Тип оплаты:* {payment_type}\n"
+            f"*🏬 Точка продаж:* {escape_markdown(point)}\n"
+            f"*💳 Тип оплаты:* {escape_markdown(payment_type)}\n"
             f"*💰 Сумма:* {amount} ₽\n\n"
             f"🖼 Прикрепите фото чека для завершения"
         ),
@@ -125,8 +126,8 @@ async def back_to_sum(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.message.chat.send_photo(
         photo="https://i.imgur.com/Wo5q3QU.jpeg",
         caption=(
-            f"*🏬 Точка продаж:* {point}\n"
-            f"*💳 Тип оплаты:* {payment_type}\n\n"
+            f"*🏬 Точка продаж:* {escape_markdown(point)}\n"
+            f"*💳 Тип оплаты:* {escape_markdown(payment_type)}\n\n"
             f"💬 Введите сумму в чат или измените способ оплаты"
         ),
         reply_markup=back_to_main_keyboard(),
@@ -157,9 +158,9 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
         short_point = "T" if data["point"] == "Тихвин" else "R"
         caption = (
             f"*🗓 {now_str}*\n\n"
-            f"*💳 Тип оплаты:* {data['type']}\n"
+            f"*📍 Точка:* {short_point}\n"
+            f"*💳 Тип оплаты:* {escape_markdown(data['type'])}\n"
             f"*💰 Сумма:* {data['sum']} ₽\n"
-            f"*📍 Точка:* {short_point}"
         )
         await context.bot.send_photo(
             chat_id=MINION_CHANNEL_ID,
@@ -170,8 +171,8 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         caption = (
             f"*🗓 {now_str}*\n\n"
-            f"*🏬 Точка продаж:* {data['point']}\n"
-            f"*💳 Тип оплаты:* {data['type']}\n"
+            f"*🏬 Точка продаж:* {escape_markdown(data['point'])}\n"
+            f"*💳 Тип оплаты:* {escape_markdown(data['type'])}\n"
             f"*💰 Сумма:* {data['sum']} ₽"
         )
         await context.bot.send_photo(
@@ -202,7 +203,7 @@ async def handle_summary(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     text = (
         f"*📊 Общий итог за {today.strftime('%d.%m.%Y')}*\n\n"
-        f"*🏬 Точка:* {user_point}\n\n"
+        f"*🏬 Точка:* {escape_markdown(user_point)}\n\n"
         f"*🧾 QR:* {summary['QR']} ₽\n"
         f"*💳 Терминал:* {summary['Terminal']} ₽\n"
         f"*🧬 MinionPay:* {summary['MinionPay']} ₽"
