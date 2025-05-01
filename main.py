@@ -1,4 +1,3 @@
-# main.py
 import logging
 from telegram.ext import (
     ApplicationBuilder,
@@ -12,6 +11,7 @@ from telegram.ext import (
 from config import BOT_TOKEN
 from handlers import (
     start,
+    handle_point_choice,
     handle_payment_type,
     handle_sum,
     handle_photo,
@@ -19,7 +19,7 @@ from handlers import (
     back_to_sum
 )
 
-CHOOSE_TYPE, SELECT_SUM, UPLOAD_PHOTO = range(3)
+SELECT_POINT, CHOOSE_TYPE, SELECT_SUM, UPLOAD_PHOTO = range(4)
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -40,8 +40,11 @@ def main():
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler("start", start)],
         states={
+            SELECT_POINT: [
+                CallbackQueryHandler(handle_point_choice, pattern="^point_")
+            ],
             CHOOSE_TYPE: [
-                CallbackQueryHandler(handle_payment_type, pattern="^(payment_QR|payment_Terminal|back_main)$")
+                CallbackQueryHandler(handle_payment_type, pattern="^(payment_QR|payment_Terminal|payment_MinionPay|back_to_point)$")
             ],
             SELECT_SUM: [
                 MessageHandler(filters.TEXT & ~filters.COMMAND, handle_sum),
@@ -63,4 +66,4 @@ def main():
     app.run_polling()
 
 if __name__ == "__main__":
-    main() # комм
+    main()
