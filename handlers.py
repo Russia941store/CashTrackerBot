@@ -1,3 +1,4 @@
+# handlers.py
 from telegram import Update
 from telegram.ext import ContextTypes, ConversationHandler
 from telegram.helpers import escape_markdown
@@ -17,6 +18,13 @@ transactions = []
 
 def get_now():
     return datetime.utcnow() + timedelta(hours=5)
+
+def localize_payment_type(payment_type: str) -> str:
+    return {
+        "Terminal": "Терминал",
+        "QR": "QR",
+        "MinionPay": "MinionPay"
+    }.get(payment_type, payment_type)
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_photo(
@@ -84,7 +92,7 @@ async def handle_payment_type(update: Update, context: ContextTypes.DEFAULT_TYPE
         photo="https://i.imgur.com/Wo5q3QU.jpeg",
         caption=(
             f"*🏬 Точка продаж:* {escape_markdown(point)}\n"
-            f"*💳 Тип оплаты:* {escape_markdown(payment_type)}\n\n"
+            f"*💳 Тип оплаты:* {escape_markdown(localize_payment_type(payment_type))}\n\n"
             f"💬 Введите сумму в чат или измените способ оплаты"
         ),
         reply_markup=back_to_main_keyboard(),
@@ -111,7 +119,7 @@ async def handle_sum(update: Update, context: ContextTypes.DEFAULT_TYPE):
         caption=(
             f"*🗓 {now}*\n\n"
             f"*🏬 Точка продаж:* {escape_markdown(point)}\n"
-            f"*💳 Тип оплаты:* {escape_markdown(payment_type)}\n"
+            f"*💳 Тип оплаты:* {escape_markdown(localize_payment_type(payment_type))}\n"
             f"*💰 Сумма:* {amount} ₽\n\n"
             f"🖼 Прикрепите фото чека для завершения"
         ),
@@ -138,7 +146,7 @@ async def back_to_sum(update: Update, context: ContextTypes.DEFAULT_TYPE):
         photo="https://i.imgur.com/Wo5q3QU.jpeg",
         caption=(
             f"*🏬 Точка продаж:* {escape_markdown(point)}\n"
-            f"*💳 Тип оплаты:* {escape_markdown(payment_type)}\n\n"
+            f"*💳 Тип оплаты:* {escape_markdown(localize_payment_type(payment_type))}\n\n"
             f"💬 Введите сумму в чат или измените способ оплаты"
         ),
         reply_markup=back_to_main_keyboard(),
@@ -170,7 +178,7 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
         caption = (
             f"*🗓 {now_str}*\n\n"
             f"*📍 Точка:* {short_point}\n"
-            f"*💳 Тип оплаты:* {escape_markdown(data['type'])}\n"
+            f"*💳 Тип оплаты:* {escape_markdown(localize_payment_type(data['type']))}\n"
             f"*💰 Сумма:* {data['sum']} ₽\n"
         )
         await context.bot.send_photo(
@@ -183,7 +191,7 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
         caption = (
             f"*🗓 {now_str}*\n\n"
             f"*🏬 Точка продаж:* {escape_markdown(data['point'])}\n"
-            f"*💳 Тип оплаты:* {escape_markdown(data['type'])}\n"
+            f"*💳 Тип оплаты:* {escape_markdown(localize_payment_type(data['type']))}\n"
             f"*💰 Сумма:* {data['sum']} ₽"
         )
         await context.bot.send_photo(
