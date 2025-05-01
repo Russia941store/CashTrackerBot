@@ -48,12 +48,14 @@ def main():
             ],
             SELECT_SUM: [
                 MessageHandler(filters.TEXT & ~filters.COMMAND, handle_sum),
-                CallbackQueryHandler(handle_payment_type, pattern="^back_main$")
+                CallbackQueryHandler(handle_payment_type, pattern="^back_main$"),
+                CallbackQueryHandler(handle_payment_type, pattern="^back_to_point$")  # ➕ добавляем это
             ],
             UPLOAD_PHOTO: [
                 MessageHandler(filters.PHOTO, handle_photo),
                 CallbackQueryHandler(back_to_sum, pattern="^back_amount$"),
-                CallbackQueryHandler(handle_payment_type, pattern="^back_main$")
+                CallbackQueryHandler(handle_payment_type, pattern="^back_main$"),
+                CallbackQueryHandler(handle_payment_type, pattern="^back_to_point$")  # ➕ добавляем это
             ],
         },
         fallbacks=[CommandHandler("start", start)],

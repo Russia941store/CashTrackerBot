@@ -4,7 +4,7 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 def select_point_keyboard():
     return InlineKeyboardMarkup([
         [InlineKeyboardButton("🏪 Тихвин", callback_data="point_Tikhvin")],
-        [InlineKeyboardButton("🏢 Радищева", callback_data="point_Radischeva")]
+        [InlineKeyboardButton("🏢 Радищева", callback_data="point_Radishcheva")]
     ])
 
 def payment_options_keyboard(point):
